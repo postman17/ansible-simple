@@ -1,0 +1,9 @@
+[digital_ocean]
+linux1 ansible_host=68.183.65.48 ansible_user=root ansible_ssh_private_key_file=/home/konstantin/.ssh/id_rsa.pub
+
+[amazon]
+linux2 ansible_host=3.19.54.83 ansible_user=ubuntu ansible_ssh_private_key_file=/home/konstantin/postman.pem
+
+[servers:children]
+digital_ocean
+amazon

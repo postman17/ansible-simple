@@ -1,0 +1,26 @@
+---  # обязательный параметр
+- name: Install Apache and Upload my Web Page  # имя плейбука
+  hosts: all  # все серверы(для каких серверов применяется плейбук)
+  become: yes  # аналогично ключу -b в командной строке (запуск через sudo)
+
+  # блок переменных
+  vars:
+    source_file: ./index.html  # переменная с путем до html файла
+    destin_file: /var/www/html  # переменная с путем на удаленном сервере
+
+  # блок тасков
+  tasks:
+    - name: Install Apache Web Server # имя таска
+      yum: name=httpd state=latest  # установка пакета httpd
+
+    - name: Copy Webpage to servers  # Имя пакета
+      copy: src={{ source_file }} dest={{ destin_file }} mode=0555  # Копирование файла на сервер
+      notify: Restart Apache  # Если операция успешна выполнить handler
+
+    - name: Start WebServer and make it enabled on boot  # Имя таска
+      service: name=httpd state=started enabled=yes  # Запуск сервиса httpd c включением при загрузке
+
+  # блок хендлера
+  handlers:
+    - name: Restart Apache  # Имя хендлера
+      service: name=httpd state=restarted  # Рестарт сервиса httpd

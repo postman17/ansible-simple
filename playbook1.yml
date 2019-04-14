@@ -1,0 +1,10 @@
+---  # обязательный параметр
+# блок
+- name: Test Connection to servers  # имя блока
+  hosts: all  # участвуют все хосты
+  become: yes  # использовать sudo
+
+# блок тасков
+  tasks:
+    - name: Ping my servers  # Имя таска
+      ping:  # команда пинг

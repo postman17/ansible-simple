@@ -1,0 +1,39 @@
+---  # обязательный атрибут
+# блок
+- name: Variables lesson  # имя блока
+  hosts: all  # участвуют все серверы
+  become: yes  # используется sudo
+
+# блок переменных
+  vars:
+    message1: Privet  # переменная
+    message2: World  # переменная
+    secret: SDSDGSDFGSDFGLKEWRLGKJLERJGIERS  # переменная
+    owner: Postman17  # переменная
+
+# блок тасков
+  tasks:
+    # таск 1
+    - name: Print Secret variable  # имя таска
+      debug:  # вывод в консоль
+        var: secret  # переменную secret
+    # таск 2
+    - debug:  # вывод в консоль
+        msg: "Sekretnoe slovo: {{ secret }}"  # вывод в консоль строку с переменной secret
+    # таск 3
+    - debug:  # вывод в консоль
+        msg: "Vladelec etogo servera -->{{ owner }}<--"  # вывод в консоль строку с переменной owner
+    # таск 4
+    - set_fact: full_message="{{ message1 }} {{ message2 }} from {{ owner }}"  # создаем переменную full_message
+    # таск 5
+    - debug:  # вывод в консоль
+        var: full_message  # переменную full_message
+    # таск 6
+    - debug:  # вывод в консоль
+        var: ansible_distribution  # переменная из команды -m setup
+    # таск 7
+    - shell: uptime  # запуск команды uptime на серверах
+      register: results  #вывод команды в переменную
+    # таск 8
+    - debug: # вывод в консоль
+        var: results.stdout  # вывод из переменной results

@@ -1,0 +1,15 @@
+---  # обязательный параметр
+# блок
+- name: Install default Apache Web Server  # имя блока
+  hosts: all  # участвуют все серверы
+  become: yes  # используется sudo
+
+# блок тасков
+  tasks:
+    # таск 1
+    - name: Install Apache Web Server  # имя таска
+      yum: name=httpd state=latest  # устанавливает пакет httpd
+
+    # таск 2
+    - name: Start Apach and enable it on the every boot  # имя таска
+      service: name=httpd state=started enabled=yes  # запускает сервис httpd с включением при загрузке
