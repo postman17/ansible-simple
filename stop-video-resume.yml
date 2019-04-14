@@ -1,0 +1,13 @@
+---
+- name: stop docker dev for video-resume
+  hosts: digital_ocean
+  become: yes
+
+  tasks:
+    - shell: cd /root/github/videoresume/video-resume/docker && docker-compose -f docker-compose.dev.yml down
+      notify: Send good
+
+  handlers:
+    - name: Send good
+      debug:
+        msg: "Gooooooooooooooooooooooood!"
