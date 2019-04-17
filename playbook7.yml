@@ -1,0 +1,55 @@
+---
+- name: Install Apache and Upload my Home Page
+  hosts: all
+  become: yes
+# блок переменных
+  vars:
+    source_folder: ./mywebpage  # путь до файла
+    destin_folder: /var/www/html  # путь куда копировать
+# блок тасков
+  tasks:
+    - name: Check and print linux version
+      debug: var=ansible_os_family  # выводит переменную в консоль
+    # блок команд с указанием условия
+    - block:  #====Block for Redhat====
+
+      - name: Install Apache web server for Redhat
+        yum: name=httpd state=latest
+
+      - name: Start web server service for Redhat
+        service: name=httpd state=started enabled=yes
+
+      when: ansible_os_family == "RedHat"  # выполнить когда ansible_os_family будет равно "RedHat"
+    # блок команд с указанием условия
+    - block:  #====Block for Ubuntu====
+
+      - name: Install Apache web server for Debian
+        apt: name=apache2 state=latest
+
+      - name: Start webserver service for Debian
+        service: name=apache2 state=started enable=yes
+
+      when: ansible_os_family == "Debian"  # выполнить когда ansible_os_family будет равно "Debian"
+
+    - name: Copy homepage file to webserver
+      copy: src={{ source_folder }}/{{ item }} dest={{ destin_folder }} mode 0555
+      with_fileglob: "{{ source_folder }}/*.*"  # Копирует все файлы по маске *,*
+#      loop:  # копирует в цикле перечисленные файлы
+#        - "index.html"
+#        - "some.file"
+#        - "some.file1"
+#        - "some.file2"
+      notify:
+        - Restart apache redhat
+        - Restart apache debian
+
+
+
+  handlers:
+    - name: Restart apache redhat
+      service: name=httpd state=restarted
+      when: ansible_os_family == "RedHat"
+
+    - name: Restart apache debian
+      service: name=apache2 state=restarted
+      when: ansible_os_family == "Debian"

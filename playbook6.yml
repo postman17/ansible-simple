@@ -1,0 +1,23 @@
+---
+- name: loops playbook
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Say hello to all
+      debug: msg="Hello {{ item }}"  # item зарезервированная переменная для цикла
+      loop:  # в цикле перебираем items
+        - "Vasya"
+        - "Petya"
+        - "Masha"
+
+    - name: Loop until example
+      shell: echo -n Z >> myfile.txt && cat myfile.txt
+      register: output
+      delay: 2  # c паузой 2 секунды
+      retries: 10  # выполнить 10 итераций
+      until: output.stdout.find("ZZZZ") == false  # делать итерации пока не будет выполнено условие
+
+    - name: Print final output
+      debug:
+        var: output.stdout

@@ -1,0 +1,47 @@
+---
+- name: Install Apache and Upload my Home Page
+  hosts: all
+  become: yes
+# блок переменных
+  vars:
+    source_file: ./mywebpage/index.html  # путь до файла
+    destin_file: /var/www/html  # путь куда копировать
+# блок тасков
+  tasks:
+    - name: Check and print linux version
+      debug: var=ansible_os_family  # выводит переменную в консоль
+    # блок команд с указанием условия
+    - block:  #====Block for Redhat====
+
+      - name: Install Apache web server for Redhat
+        yum: name=httpd state=latest
+
+      - name: Copy homepage file to webserver
+        copy: src={{ source_file }} dest={{ destin_file }} mode 0555
+        notify: Restart apache redhat
+
+      - name: Start web server service for Redhat
+        service: name=httpd state=started enabled=yes
+
+      when: ansible_os_family == "RedHat"  # выполнить когда ansible_os_family будет равно "RedHat"
+    # блок команд с указанием условия
+    - block:  #====Block for Ubuntu====
+
+      - name: Install Apache web server for Debian
+        apt: name=apache2 state=latest
+
+      - name: Copy homepage file to webserver
+        copy: src={{ source_file }} dest={{ destin_file }} mode 0555
+        notify: Restart apache debian
+
+      - name: Start webserver service for Debian
+        service: name=apache2 state=started enable=yes
+
+      when: ansible_os_family == "Debian"  # выполнить когда ansible_os_family будет равно "Debian"
+
+  handlers:
+    - name: Restart apache redhat
+      service: name=httpd state=restarted
+
+    - name: Restart apache debian
+      service: name=apache2 state=restarted
